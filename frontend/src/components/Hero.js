@@ -141,7 +141,7 @@ const Hero = ({ profile }) => {
           </div>
 
           <div className="text-center lg:text-left will-change-transform">
-            <h1 ref={textContainerRef} className="name-heading text-6xl md:text-[9rem] font-mono text-white leading-[0.9] tracking-tighter uppercase mb-6">
+            <h1 ref={textContainerRef} className="name-heading text-6xl md:text-[9rem] font-mono text-white leading-[0.9] tracking-tighter uppercase mb-6 whitespace-nowrap">
               {renderLetters(profile.name)}
             </h1>
 

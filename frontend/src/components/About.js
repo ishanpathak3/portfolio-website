@@ -161,8 +161,10 @@ function About({ profile }) {
 
 
               <h2 className="reveal-text text-5xl md:text-7xl font-display font-bold text-white leading-[0.9]">
-                Building <br />
-                <span className="text-dark-400 italic">Digital</span> Solutions
+                Building
+                <span className="block mt-3">
+                   <span className="text-dark-400 italic">Digital</span> Solutions
+                </span>
               </h2>
 
 
