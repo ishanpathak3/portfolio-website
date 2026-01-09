@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-dark-950 text-white font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
+  }
+}
+
+@layer components {
+  /* Glassmorphism card - monochrome */
+  .glass-card {
+    @apply bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-2xl;
+    box-shadow: 
+      0 8px 32px 0 rgba(0, 0, 0, 0.5),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  /* Minimal border effect */
+  .minimal-border {
+    @apply border border-white/10 hover:border-white/20 transition-colors duration-300;
+  }
+
+  /* Button styles */
+  .btn {
+    @apply px-6 py-3 rounded-lg font-medium transition-all duration-300 
+           inline-flex items-center gap-2 relative overflow-hidden;
+  }
+
+  .btn-primary {
+    @apply bg-white text-black font-semibold
+           hover:bg-dark-100 hover:scale-105 active:scale-95;
+  }
+
+  .btn-outline {
+    @apply border-2 border-white text-white 
+           hover:bg-white hover:text-black;
+  }
+
+  .btn-ghost {
+    @apply glass-card text-white hover:bg-white/5 hover:scale-105;
+  }
+
+  /* Gradient text - monochrome */
+  .gradient-text {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-white via-dark-200 to-white;
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+  }
+
+  /* Section styles */
+  .section {
+    @apply py-20 md:py-32 px-4 relative;
+  }
+
+  .container {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  /* Input styles */
+  .input {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-white/10 
+           bg-white/[0.02] backdrop-blur-xl text-white placeholder-dark-400
+           focus:border-white/30 focus:ring-2 focus:ring-white/10 
+           transition-all outline-none;
+  }
+
+  .textarea {
+    @apply input resize-none;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-dark-200 mb-2;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-dark-500;
+}
+
+/* Selection color */
+::selection {
+  @apply bg-white text-black;
+}
+
+/* Animated gradient background for sections */
+.gradient-bg {
+  background: linear-gradient(135deg, #000000, #0a0a0a, #1a1a1a, #0a0a0a, #000000);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+}
+
+/* Subtle glow effect */
+.glow-subtle {
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+/* Grid pattern background */
+.grid-pattern {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Noise texture */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.03;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Spotlight effect on hover */
+.spotlight {
+  position: relative;
+}
+
+.spotlight::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent 70%);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.6s ease;
+  pointer-events: none;
+}
+
+.spotlight:hover::before {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+}
+
+/* Underline animation */
+@keyframes underlineExpand {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.underline-animate {
+  position: relative;
+}
+
+.underline-animate::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s ease;
+}
+
+.underline-animate:hover::after {
+  width: 100%;
+}
