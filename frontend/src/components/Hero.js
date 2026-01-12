@@ -166,6 +166,7 @@ const Hero = ({ profile = { name: "JOHN DOE" } }) => {
   return (
     <section
       ref={containerRef}
+      id='hero'
       className="relative min-h-screen flex items-center justify-center bg-[#030303] overflow-hidden"
       style={{ perspective: "1000px" }}
     >
