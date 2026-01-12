@@ -65,7 +65,7 @@ function Contact({ profile }) {
     {
       name: 'GitHub',
       icon: FiGithub,
-      url: 'https://github.com/ishanpathak3',
+      url: 'https://github.com/theishanpathak',
       color: 'hover:bg-dark-800'
     },
     {
@@ -149,7 +149,7 @@ function Contact({ profile }) {
                   <div className="flex-1">
                     <div className="font-semibold text-white">{link.name}</div>
                     <div className="text-sm text-dark-300">
-                      {link.name === 'Email' ? profile.email : `@ishanpathak`}
+                      {link.name === 'Email' ? profile.email : `@theishanpathak`}
                     </div>
                   </div>
                   <motion.div

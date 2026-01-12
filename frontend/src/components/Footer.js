@@ -6,7 +6,7 @@ function Footer({ profile }) {
   const currentYear = new Date().getFullYear();
 
    const socialLinks = [
-    { icon: FiGithub, url: 'https://github.com/ishanpathak3', label: 'GitHub' },
+    { icon: FiGithub, url: 'https://github.com/theishanpathak', label: 'GitHub' },
     { icon: FiLinkedin, url: 'https://www.linkedin.com/in/ishan-pathak333/', label: 'LinkedIn' },
     { icon: FiMail, url: `mailto:${profile.email}`, label: 'Email' },
   ];
@@ -30,7 +30,7 @@ function Footer({ profile }) {
               Ishan Pathak
             </h3>
             <p className="text-dark-400 text-sm font-mono">
-              Full-Stack Developer
+            Software Engineer
             </p>
           </div>
 

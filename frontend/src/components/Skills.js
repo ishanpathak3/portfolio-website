@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
+import SkillCard from './SkillCard';
 
 import { 
   SiSpringboot, SiDjango, SiPostgresql, SiGo, SiFlutter 
@@ -9,9 +10,6 @@ import {
 import { 
   FaJava, FaReact, FaPython, FaDocker, FaGitAlt 
 } from 'react-icons/fa'; 
-
-
-
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -32,19 +30,37 @@ function Skills() {
   const sectionRef = useRef(null);
   const containerRef = useRef(null);
   const progressRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Detect mobile and tablets (including iPads)
+    const checkMobile = () => {
+      const width = window.innerWidth;
+      const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isTabletOrMobile = width < 1024 || (isTouch && width < 1280);
+      
+      setIsMobile(isTabletOrMobile);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // Only run horizontal scroll animation on desktop
+    if (isMobile) return;
+
     const section = sectionRef.current;
     const container = containerRef.current;
     const progressBar = progressRef.current;
     const totalSkills = skills.length;
     const spacing = 400;
 
-    // Calculate positions: first skill should be centered, last skill should be centered
-    const startX = -(spacing * 0); // First skill centered (accounting for paddingLeft 50%)
-    const endX = -(spacing * totalSkills); // Last skill centered
+    const startX = -(spacing * 0);
+    const endX = -(spacing * totalSkills);
 
-    // Create timeline
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
@@ -62,7 +78,6 @@ function Skills() {
       }
     });
 
-    // Animate container from first to last skill
     tl.fromTo(container,
       { x: startX },
       {
@@ -75,7 +90,7 @@ function Skills() {
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, []);
+  }, [isMobile]);
 
   const spacing = 400;
 
@@ -83,20 +98,20 @@ function Skills() {
     <section
       id="skills"
       ref={sectionRef}
-      className="relative min-h-screen bg-dark-950 overflow-hidden"
+      className="relative bg-[#030303] overflow-hidden"
+      style={{ minHeight: isMobile ? 'auto' : '100vh' }}
     >
-
       {/* Spotlight effect */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="w-[600px] h-[600px] rounded-full bg-white opacity-[0.03] blur-[120px]" />
       </div>
 
       {/* Title */}
-      <div className="absolute top-20 left-0 right-0 text-center z-10 pointer-events-none">
-        <span className="inline-block text-dark-200 font-semibold text-sm uppercase tracking-wider mb-3 flex items-center gap-2 justify-center">
+      <div className={`${isMobile ? 'relative' : 'absolute'} top-0 md:top-20 left-0 right-0 text-center z-10 pointer-events-none py-12 md:py-0`}>
+        <span className="inline-block text-gray-400 font-semibold text-sm uppercase tracking-wider mb-3 flex items-center gap-2 justify-center">
           <span className="font-mono text-white">&lt;</span> Skills <span className="font-mono text-white">/&gt;</span>
         </span>
-        <h2 className="text-6xl md:text-7xl font-display font-bold text-white mt-4 tracking-tight">
+        <h2 className="text-5xl md:text-7xl font-display font-bold text-white mt-4 tracking-tight">
           Tech Stack
         </h2>
         <div className="mt-6 flex justify-center">
@@ -104,97 +119,82 @@ function Skills() {
         </div>
       </div>
 
-      {/* Side labels */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-        <div className="absolute left-[10%] flex flex-col items-end gap-1 opacity-20">
-          <div className="w-8 h-[1px] bg-dark-600" />
-          <span className="text-dark-600 font-mono text-xs">Previous</span>
-        </div>
+      {/* Desktop: Horizontal scroll layout */}
+      {!isMobile && (
+        <>
+          {/* Side labels */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+            <div className="absolute left-[10%] flex flex-col items-end gap-1 opacity-20">
+              <div className="w-8 h-[1px] bg-gray-600" />
+              <span className="text-gray-600 font-mono text-xs">Previous</span>
+            </div>
 
-        <div className="absolute right-[10%] flex flex-col items-start gap-1 opacity-20">
-          <div className="w-8 h-[1px] bg-dark-600" />
-          <span className="text-dark-600 font-mono text-xs">Next</span>
-        </div>
-      </div>
+            <div className="absolute right-[10%] flex flex-col items-start gap-1 opacity-20">
+              <div className="w-8 h-[1px] bg-gray-600" />
+              <span className="text-gray-600 font-mono text-xs">Next</span>
+            </div>
+          </div>
 
-      {/* Skills queue container */}
-      <div className="h-screen flex items-center overflow-hidden">
-        <div
-          ref={containerRef}
-          className="flex items-center gap-0"
-          style={{
-            marginLeft: '50%',
-          }}
-        >
-          {skills.map((skill, index) => {
-            return (
-              <div
-                key={index}
-                className="flex-shrink-0 transition-all duration-700"
-                style={{
-                  width: `${spacing}px`,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
+          {/* Skills queue container */}
+          <div className="h-screen flex items-center overflow-hidden">
+            <div
+              ref={containerRef}
+              className="flex items-center gap-0"
+              style={{
+                marginLeft: '50%',
+              }}
+            >
+              {skills.map((skill, index) => (
                 <div
-                  className="relative group skill-card"
+                  key={index}
+                  className="flex-shrink-0 transition-all duration-700"
                   style={{
-                    transform: 'translateZ(0)',
+                    width: `${spacing}px`,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
-                  {/* Card glow */}
-                  <div className="absolute inset-0 rounded-[2rem] bg-white opacity-0 blur-2xl transition-opacity duration-500"
-                    style={{ opacity: 0 }} />
-
-                  {/* Main card */}
-                  <div className="relative w-64 h-64 rounded-[2rem] border border-dark-800 bg-gradient-to-br from-dark-900 to-dark-950 backdrop-blur-xl flex flex-col items-center justify-center gap-6 shadow-2xl overflow-hidden transition-all duration-500">
-                    {/* Inner glow */}
-                    <div className="absolute inset-[1px] rounded-[2rem] bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
-
-                    {/* Icon */}
-                    <div className="text-[7rem] leading-none">
-
-                      <span style={{color: skill.color}}>{skill.icon}</span>
-                    </div>
-
-                    {/* Name */}
-                    <div className="text-white font-display font-bold text-2xl tracking-tight">
-                      {skill.name}
-                    </div>
-
-                    {/* Position indicator */}
-                    <div className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-dark-800/50 border border-dark-700 flex items-center justify-center text-dark-400 text-xs font-mono">
-                      {index + 1}
-                    </div>
-                  </div>
+                  <SkillCard skill={skill} index={index} />
                 </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Side fade overlays */}
+          <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-[#030303] to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-[#030303] to-transparent pointer-events-none z-10" />
+
+          {/* Progress bar */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 w-full max-w-md px-8">
+            <div className="text-center mb-4">
+              <p className="text-gray-500 text-xs font-mono tracking-wider">
+                SCROLL TO NAVIGATE
+              </p>
+            </div>
+            <div className="h-[2px] bg-gray-800 rounded-full overflow-hidden">
+              <div
+                ref={progressRef}
+                className="h-full bg-gradient-to-r from-gray-600 via-white to-gray-600 rounded-full"
+                style={{ width: '0%' }}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Mobile: Simple grid layout */}
+      {isMobile && (
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-4xl mx-auto">
+            {skills.map((skill, index) => (
+              <div key={index} className="flex justify-center">
+                <SkillCard skill={skill} index={index} mobile />
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* Side fade overlays */}
-      <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-dark-950 to-transparent pointer-events-none z-10" />
-      <div className="absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-dark-950 to-transparent pointer-events-none z-10" />
-
-      {/* Progress section */}
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 w-full max-w-md px-8">
-        <div className="text-center mb-4">
-          <p className="text-dark-500 text-xs font-mono tracking-wider">
-            SCROLL TO NAVIGATE
-          </p>
-        </div>
-        <div className="h-[2px] bg-dark-800 rounded-full overflow-hidden">
-          <div
-            ref={progressRef}
-            className="h-full bg-gradient-to-r from-dark-600 via-white to-dark-600 rounded-full"
-            style={{ width: '0%' }}
-          />
-        </div>
-      </div>
+      )}
     </section>
   );
 }

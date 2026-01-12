@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { MapPin, ChevronDown } from 'lucide-react';
 
-const Hero = ({ profile }) => {
+const Hero = ({ profile = { name: "JOHN DOE" } }) => {
   const containerRef = useRef(null);
   const blobRef = useRef(null);
   const iconGroupRef = useRef([]);
@@ -18,77 +18,132 @@ const Hero = ({ profile }) => {
   const opacityText = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   useEffect(() => {
+    // Detect mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+
     const ctx = gsap.context(() => {
-      // 1. Entrance Animation: Staggered letters
       const tl = gsap.timeline();
 
-      tl.from(".char", {
-        y: 40,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.05,
-        ease: "power4.out"
-      })
-        .from(".hero-reveal:not(.name-heading)", {
+      // Simplified entrance animations for mobile
+      if (isMobile) {
+        // Simple fade in for the whole name on mobile
+        tl.from(".name-heading", {
           y: 30,
           opacity: 0,
-          duration: 1,
-          stagger: 0.15,
-          ease: "expo.out"
-        }, "-=0.5")
-        .from(".hobby-item", {
-          scale: 0,
-          opacity: 0,
-          stagger: 0.1,
           duration: 0.8,
-          ease: "back.out(1.7)"
-        }, "-=0.6");
+          ease: "power3.out"
+        })
+          .from(".hero-reveal:not(.name-heading)", {
+            y: 20,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "power2.out"
+          }, "-=0.4")
+          .from(".hobby-item", {
+            scale: 0.8,
+            opacity: 0,
+            stagger: 0.08,
+            duration: 0.5,
+            ease: "power2.out"
+          }, "-=0.3");
+      } else {
+        // Full character stagger animation for desktop
+        tl.from(".char", {
+          y: 40,
+          opacity: 0,
+          duration: 1,
+          stagger: 0.05,
+          ease: "power4.out"
+        })
+          .from(".hero-reveal:not(.name-heading)", {
+            y: 30,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.15,
+            ease: "expo.out"
+          }, "-=0.5")
+          .from(".hobby-item", {
+            scale: 0,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 0.8,
+            ease: "back.out(1.7)"
+          }, "-=0.6");
+      }
 
-      // 2. Continuous Animation: Breathing & Floating
+      // Continuous animations - simplified for mobile
       tl.add(() => {
-        gsap.to(textContainerRef.current, {
-          scale: 1.03,
-          y: -15,
-          rotationX: 5,
-          rotationY: -2,
-          duration: 3,
+        if (isMobile) {
+          // Simpler animation for mobile
+          gsap.to(textContainerRef.current, {
+            y: -10,
+            duration: 2.5,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+          });
+        } else {
+          // Full animation for desktop
+          gsap.to(textContainerRef.current, {
+            scale: 1.03,
+            y: -15,
+            rotationX: 5,
+            rotationY: -2,
+            duration: 3,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+          });
+        }
+      });
+
+      // Blob animation - reduced complexity on mobile
+      if (isMobile) {
+        gsap.to(blobRef.current, {
+          duration: 10,
           repeat: -1,
           yoyo: true,
-          ease: "sine.inOut"
+          ease: "sine.inOut",
+          rotation: 180,
+          scale: 1.1,
+          transformOrigin: "center"
         });
-      });
-
-      // Continuous blob animation
-      gsap.to(blobRef.current, {
-        duration: 8,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        rotation: 360,
-        scale: 1.2,
-        transformOrigin: "center",
-        x: 20,
-        y: -20,
-      });
-
-      const handleMouseMove = (e) => {
-        const xPos = (e.clientX - window.innerWidth / 2) / 80;
-        const yPos = (e.clientY - window.innerHeight / 2) / 80;
-
-        iconGroupRef.current.forEach((icon, i) => {
-          if (icon) {
-            gsap.to(icon, {
-              x: xPos * (i + 1),
-              y: yPos * (i + 1),
-              duration: 1,
-              ease: "power2.out"
-            });
-          }
+      } else {
+        gsap.to(blobRef.current, {
+          duration: 8,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          rotation: 360,
+          scale: 1.2,
+          transformOrigin: "center",
+          x: 20,
+          y: -20,
         });
-      };
+      }
 
-      window.addEventListener('mousemove', handleMouseMove);
-      return () => window.removeEventListener('mousemove', handleMouseMove);
+      // Only add mousemove on desktop
+      if (!isMobile) {
+        const handleMouseMove = (e) => {
+          const xPos = (e.clientX - window.innerWidth / 2) / 80;
+          const yPos = (e.clientY - window.innerHeight / 2) / 80;
+
+          iconGroupRef.current.forEach((icon, i) => {
+            if (icon) {
+              gsap.to(icon, {
+                x: xPos * (i + 1),
+                y: yPos * (i + 1),
+                duration: 1,
+                ease: "power2.out"
+              });
+            }
+          });
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+      }
     }, containerRef);
 
     return () => ctx.revert();
@@ -96,11 +151,11 @@ const Hero = ({ profile }) => {
 
   const skills = ['React', 'Java', 'Python', 'Flutter', 'PostgreSQL'];
 
-  // Updated helper with hover effect
   const renderLetters = (name) => {
     return name.split("").map((char, index) => (
       <span
         key={index}
+        aria-hidden="true"
         className="char inline-block transition-colors duration-300 hover:text-emerald-500 cursor-default"
       >
         {char === " " ? "\u00A0" : char}
@@ -114,8 +169,9 @@ const Hero = ({ profile }) => {
       className="relative min-h-screen flex items-center justify-center bg-[#030303] overflow-hidden"
       style={{ perspective: "1000px" }}
     >
+      {/* Reduced blur for mobile */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-        <div className="w-full max-w-4xl aspect-square opacity-20 filter blur-[120px]">
+        <div className="w-full max-w-4xl aspect-square opacity-20 blur-[60px] md:blur-[120px]">
           <svg viewBox="-100 -100 200 200" className="w-full h-full overflow-visible">
             <path
               ref={blobRef}
@@ -142,12 +198,15 @@ const Hero = ({ profile }) => {
 
           <div className="text-center lg:text-left will-change-transform">
             <h1 ref={textContainerRef} className="name-heading text-6xl md:text-[9rem] font-mono text-white leading-[0.9] tracking-tighter uppercase mb-6 whitespace-nowrap">
+              <span className="sr-only">
+                {profile.name} – Full-Stack Software Engineer
+              </span>
               {renderLetters(profile.name)}
             </h1>
 
             <div className="hero-reveal flex flex-col lg:flex-row lg:items-end gap-6 lg:gap-12">
               <h2 className="text-2xl md:text-4xl text-gray-400 font-light tracking-tight max-w-2xl">
-                A <span className="text-white font-medium italic">Full-Stack Developer</span> crafting
+                A <span className="text-white font-medium italic">Full-Stack Software Engineer</span> crafting
                 digital experiences with precision and purpose.
               </h2>
 
@@ -174,23 +233,27 @@ const Hero = ({ profile }) => {
         </div>
       </motion.div>
 
-      {/* Scroll indicator */}
+
+      {/* Scroll indicator - Adjusted for Mobile Visibility */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.5 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-20"
+        // Using bottom-24 on small screens to clear mobile browser UI, bottom-10 on desktop
+        className="absolute bottom-24 md:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-30"
       >
         <div className="relative">
           <motion.div
-            animate={{ y: [0, 10, 0] }}
+            animate={{ y: [0, 8, 0] }} // Slightly tighter bounce for mobile
             transition={{ repeat: Infinity, duration: 2 }}
-            className="cursor-pointer p-3 rounded-full border border-white/10 bg-white/5 hover:bg-emerald-500/10 transition-colors group"
+            className="cursor-pointer p-4 md:p-3 rounded-full border border-white/10 bg-black/40 backdrop-blur-md hover:bg-emerald-500/10 transition-colors group"
             onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <ChevronDown className="text-emerald-500 group-hover:scale-110 transition-transform" size={24} />
           </motion.div>
-          <span className="absolute top-full mt-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] uppercase tracking-[0.4em] text-white/20">
+          
+          {/* Label: Slightly larger text on mobile for readability */}
+          <span className="absolute top-full mt-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] md:text-[9px] uppercase tracking-[0.4em] text-white/40 font-medium">
             About Me
           </span>
         </div>
