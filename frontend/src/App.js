@@ -22,8 +22,9 @@ function App() {
       <main>
         <Hero profile={profileData} />
         <About profile={profileData} />
-        <Skills />
+         {/* <Skills /> */}
         <Projects projects={projectsData} profile={profileData} />
+         <Skills />
         <Contact profile={profileData} />
 
       </main>
